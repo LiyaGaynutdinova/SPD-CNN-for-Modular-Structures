@@ -1,11 +1,8 @@
-import matplotlib.pyplot as plt
 import numpy as np
-
 import torch
 
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 
 # query if we have GPU
 dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -105,10 +102,10 @@ class SPD_CNN(nn.Module):
         self.conv_blocks = nn.ModuleList(self.conv_blocks)
 
         # SPD transposed convolution blocks
-        self.spd_blocks = []
+        self.FNN_blocks = []
         for kernel in kernels:
             self.FNN_blocks.append(SPD_Block(2*self.w * 2**((kernel-1)//2), 2*(kernel+1)**2))
-        self.spd_blocks = nn.ModuleList(self.spd_blocks)
+        self.FNN_blocks = nn.ModuleList(self.FNN_blocks)
 
 
     def forward(self, x, zero_map, DBC, f):
@@ -120,7 +117,7 @@ class SPD_CNN(nn.Module):
 
         b = []
         for i in range(len(self.kernels)):
-            b.append(self.spd_blocks[i](c[i].view(-1, 2*self.w * 2**((self.kernels[i]-1)//2), x.shape[-2]*x.shape[-1], 1)))
+            b.append(self.FNN_blocks[i](c[i].view(-1, 2*self.w * 2**((self.kernels[i]-1)//2), x.shape[-2]*x.shape[-1], 1)))
 
         # Assemble global kernel matrices
         K = []

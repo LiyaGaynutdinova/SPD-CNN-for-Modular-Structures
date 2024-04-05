@@ -4,9 +4,9 @@ import pickle
 from torch.utils.data import Dataset, DataLoader
 
           
-class dataset_elast_inf(Dataset):
+class dataset_8(Dataset):
     def __init__(self, res, res2=8):
-        self.path = "C:/Users/gaynuliy/OneDrive/ModularOptimization/ModularOptimization/Truss/data/"
+        self.path = "data/"
         if res==5:
             self.path += f'elast_{res2}_5x5/'
             N = 5000
@@ -43,7 +43,7 @@ class dataset_elast_inf(Dataset):
 
 class dataset_3(Dataset):
     def __init__(self, res):
-        self.path = "C:/Users/gaynuliy/OneDrive/ModularOptimization/ModularOptimization/Truss/data/"
+        self.path = "data/"
         if res==6:
             self.path += f'elast_3_6x6/'
             N = 10000

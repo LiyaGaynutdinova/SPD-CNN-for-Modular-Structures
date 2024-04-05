@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from save_load import *
+from utilities.save_load import *
 
 def Frobenius_norm(M, M_target, w=None):
     if w is None:
@@ -13,14 +13,11 @@ def Frobenius_norm(M, M_target, w=None):
         norm = torch.linalg.matrix_norm(W * M_target, ord='fro', dim=(-2, -1))
     return diff / norm
 
+
 def train(net, loaders, args):
 
     # network
     net.to(args['dev'])
-
-    # loss functions
-    #loss = Frobenius_norm
-    #loss = nn.MSELoss(reduction='none')
 
     # optimizer
     optimizer = optim.Adam(net.parameters(), lr = args['lr'])
@@ -33,34 +30,25 @@ def train(net, loaders, args):
     losses_val = []
 
     for epoch in range(args['epochs']):
-        if args['dev'] == "cuda":
-            torch.cuda.empty_cache() 
-        # accumulate total loss over the dataset
+
+        # accumulate total loss over the training set
         L = 0
         net.train()
         if args['train_mode']=='stiffness':
             net.train_mode = 'stiffness'
-        # loop fetching a mini-batch of data at each iteration
+            
         for i, (layout, K, C, zero_map, DBC, f) in enumerate(loaders['train']):
             layout = layout.to(args['dev'])
             K = K.to(args['dev'])
             C = C.to(args['dev'])
             f = f.to(args['dev'])
             DBC = DBC.to(args['dev'])
-            if args['train_mode']=='stiffness':
-                K_net = net(layout, zero_map, DBC, f)
-                l = Frobenius_norm(K_net, K).sum() + Frobenius_norm(K_net @ C, f).sum()
-            else:
-                K_net, C_net = net(layout, zero_map, DBC, f)
-                l = (Frobenius_norm(K_net, K) + Frobenius_norm(C_net, C)).sum()
-            # accumulate the total loss as a regular float number
+            K_net, C_net = net(layout, zero_map, DBC, f)
+            l = (Frobenius_norm(K_net, K) + Frobenius_norm(C_net, C)).sum()
             loss_batch = l.detach().item()
             L += loss_batch
-            # the gradient usually accumulates, need to clear explicitly
             optimizer.zero_grad()
-            # compute the gradient from the mini-batch loss
             l.backward()
-            # make the optimization step
             optimizer.step() 
 
 
@@ -92,25 +80,5 @@ def train(net, loaders, args):
         save_network(net, args['name'] + f'_{epoch}')        
 
     return losses_train, losses_val
-
-def test(net, loaders, args):
-    net.to(args['dev'])
-
-    if args['dev'] == "cuda":
-        torch.cuda.empty_cache() 
-
-    loss = nn.L1Loss(reduction='none')
-    
-    L_test = 0
-    for i, (module, zero_map, _, _, force, deform) in enumerate(loaders['test']):
-        module = module.to(args['dev'])
-        force = force.to(args['dev'])
-        deform = deform.to(args['dev'])
-        C = net(module, zero_map)
-        y = torch.matmul(C, force)
-        norm = torch.abs(deform).sum(axis=1, keepdim=True)
-        L_test += (loss(y, deform) / norm).sum().detach().cpu()
-
-    return L_test / len(loaders['test'].dataset)
 
 

@@ -293,18 +293,3 @@ def find_deform(K, f):
     u = torch.linalg.solve(K, f)
     u_f = (u * f).sum(dim=(-2, -1))
     return u, u_f
-
-
-def find_rho(layout, res=8):
-    n = torch.where(layout[:,0]!=0, 1, 0).sum(dim=(-2, -1))
-    M = (2*res*layout[:,0] + 2*(res-2*layout[:,0])*layout[:,1]) / (res*res)
-    rho = M.sum(dim=(-2, -1)) / n
-    return rho
-
-
-def convert(input, layout):
-    x = torch.arange(2, 5).to(device=dev)
-    output_one_hot = F.gumbel_softmax(input, tau=1, hard=True, eps=1e-10, dim=1)
-    output_x_num = (output_one_hot * x.view(1,3,1,1)).sum(dim=1, keepdim=True)
-    output_clean = output_x_num * layout[:, [0]].detach()
-    return output_clean
