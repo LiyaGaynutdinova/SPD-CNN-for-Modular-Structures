@@ -8,7 +8,7 @@ $^1$ Czech Technical University in Prague, Thákurova 7, Prague, 16629, Czech Re
 
 $^2$ Eindhoven University of Technology, 5600 MB, Eindhoven, P.O. Box 513, The Netherlands
 
-The training data can be downloaded from Zenodo: (doi:10.5281/zenodo.10909619).
+The training data can be downloaded from Zenodo, doi:10.5281/zenodo.10909619.
 
 The optimization experiments on the anisotropic module dataset can be calculated with the "Optimization + brute search" Jupyter Notebook.
 
