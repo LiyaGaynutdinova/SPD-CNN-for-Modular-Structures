@@ -1,0 +1,8 @@
+matplotlib @ file:///C:/b/abs_085jhivdha/croot/matplotlib-suite_1693812524572/work
+matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1660814786464/work
+numpy @ file:///C:/b/abs_9fu2cs2527/croot/numpy_and_numpy_base_1695830496596/work/dist/numpy-1.26.0-cp311-cp311-win_amd64.whl#sha256
+Pillow @ file:///C:/b/abs_20ztcm8lgk/croot/pillow_1696580089746/work
+torch==2.1.0
+torchaudio==2.1.0
+torchrl==0.3.0
+torchvision==0.16.0
